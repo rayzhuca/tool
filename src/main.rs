@@ -2,7 +2,7 @@ mod cmds;
 
 use clap::{Parser, Subcommand};
 
-use cmds::snippet::{snippet, SnippetArgs};
+use cmds::snippet::snippet::{snippet, SnippetArgs};
 
 #[derive(Parser)]
 #[command(version, about)]
