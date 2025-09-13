@@ -1,11 +1,15 @@
-use ansi_term::Colour::Red;
+use ansi_term::Colour::{Green, Red};
 use ansi_term::Style;
 
 use clap::{arg, Args};
 
+use std::env;
 use std::ffi::OsStr;
 use std::path::PathBuf;
+use std::process::{Command, Stdio};
 use std::{fs, process};
+
+use tempfile::NamedTempFile;
 
 #[derive(Args, Debug)]
 pub struct SnippetArgs {
@@ -74,5 +78,29 @@ fn find(name: &str) {
 }
 
 fn create(name: &str) {
-    println!("create called {:?}", name);
+    let editor = env::var("EDITOR").unwrap_or("vim".to_string());
+    let temp_file = NamedTempFile::new().unwrap();
+    let temp_path = temp_file.path();
+
+    let status = Command::new(editor)
+        .arg(&temp_path)
+        .stdin(Stdio::inherit())
+        .stdout(Stdio::inherit())
+        .stderr(Stdio::inherit())
+        .status()
+        .unwrap();
+
+    if !status.success() {
+        eprintln!("{}", Red.paint("Could not read user input."));
+        process::exit(1);
+    }
+
+    let contents = fs::read_to_string(temp_path).unwrap();
+    let message = contents.lines().collect::<Vec<_>>().join("\n").to_string();
+
+    let mut snippet_path = get_store_path().clone();
+    snippet_path.push(format!("{}.txt", name));
+
+    fs::write(snippet_path, message).unwrap();
+    println!("{}", Green.paint("Snippet saved!"));
 }
