@@ -2,6 +2,7 @@ mod cmds;
 
 use clap::{Parser, Subcommand};
 
+use cmds::cp::cp::{cp, CpArgs};
 use cmds::snippet::snippet::{snippet, SnippetArgs};
 
 #[derive(Parser)]
@@ -14,6 +15,7 @@ struct Tool {
 #[derive(Subcommand)]
 enum Commands {
     Snippet(SnippetArgs),
+    Cp(CpArgs),
 }
 
 fn main() {
@@ -21,5 +23,6 @@ fn main() {
 
     match &tool.command {
         Commands::Snippet(args) => snippet(args),
+        Commands::Cp(args) => cp(args),
     }
 }
