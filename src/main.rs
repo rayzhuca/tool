@@ -5,6 +5,8 @@ use clap::{Parser, Subcommand};
 use cmds::cp::cp::{cp, CpArgs};
 use cmds::snippet::snippet::{snippet, SnippetArgs};
 
+use dotenvy;
+
 #[derive(Parser)]
 #[command(version, about)]
 struct Tool {
@@ -19,6 +21,8 @@ enum Commands {
 }
 
 fn main() {
+    dotenvy::dotenv().unwrap();
+
     let tool = Tool::parse();
 
     match &tool.command {
